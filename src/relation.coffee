@@ -1,5 +1,4 @@
 Spine   = @Spine or require('spine')
-isArray = Spine.isArray
 require = @require or ((value) -> eval(value))
 
 class Collection extends Spine.Module
@@ -38,7 +37,7 @@ class Collection extends Spine.Module
     delete @model.records[record.id] for record in @all()
     records = @model.fromJSON(values)
 
-    records = [records] unless isArray(records)
+    records = [records] unless $.isArray(records)
 
     for record in records
       record.newRecord = false

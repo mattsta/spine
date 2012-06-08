@@ -123,7 +123,7 @@ class Model extends Module
       @crecords = {}
 
     records = @fromJSON(values)
-    records = [records] unless isArray(records)
+    records = [records] unless $.isArray(records)
 
     for record in records
       record.id           or= record.cid
@@ -203,7 +203,7 @@ class Model extends Module
     return unless objects
     if typeof objects is 'string'
       objects = JSON.parse(objects)
-    if isArray(objects)
+    if $.isArray(objects)
       (new @(value) for value in objects)
     else
       new @(objects)
@@ -486,9 +486,6 @@ createObject = Object.create or (o) ->
   Func.prototype = o
   new Func()
 
-isArray = (value) ->
-  Object::toString.call(value) is '[object Array]'
-
 isBlank = (value) ->
   return true unless value
   return false for key of value
@@ -503,7 +500,6 @@ Spine = @Spine   = {}
 module?.exports  = Spine
 
 Spine.version    = '1.0.8'
-Spine.isArray    = isArray
 Spine.isBlank    = isBlank
 Spine.$          = $
 Spine.Events     = Events
