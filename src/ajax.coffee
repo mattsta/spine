@@ -83,7 +83,32 @@ class Collection extends Base
       @all(params).success (records) =>
         @model.refresh(records, options)
 
+  pull: (ids, successCallback = null, failureCallback = null) ->
+    ids = [ids] unless $.isArray(ids)
+    xhrPromises = []
+    xhrPromises.push(@xhrPull id) for id in ids
+    $.when.apply(this, xhrPromises).then(successCallback, failureCallback)
+
+
   # Private
+
+  xhrPull: (id) ->
+    record = new @model(id: id)
+    d = $.Deferred (dfd) =>
+      jsonPromise = $.getJSON(Ajax.getURL(record))
+      jsonPromise.done (jsonObj) =>
+        newObj = null
+        if $.isArray jsonObj
+          newObj = []
+          @model.refresh obj for obj in jsonObj
+          newObj.push(@model.find obj.id) for obj in jsonObj
+        else
+          @model.refresh jsonObj
+          newObj = @model.find jsonObj.id
+        dfd.resolve newObj
+      jsonPromise.fail =>
+        dfd.reject id
+    d.promise()
 
   recordsResponse: (data, status, xhr) =>
     @model.trigger('ajaxSuccess', null, status, xhr)
@@ -183,6 +208,7 @@ Extend =
 Model.Ajax =
   extended: ->
     @fetch @ajaxFetch
+    @pull @ajaxPull
     @change @ajaxChange
 
     @extend Extend
@@ -192,6 +218,9 @@ Model.Ajax =
 
   ajaxFetch: ->
     @ajax().fetch(arguments...)
+
+  ajaxPull: ->
+    @ajax().pull(arguments...)
 
   ajaxChange: (record, type, options = {}) ->
     return if options.ajax is false
