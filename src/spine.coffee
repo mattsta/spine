@@ -196,6 +196,12 @@ class Model extends Module
     else
       @trigger('fetch', callbackOrParams)
 
+  @pull: (idOrCallback, successCallback, failureCallback) ->
+    if typeof idOrCallback is 'function'
+      @bind('pull', idOrCallback)
+    else
+      @trigger('pull', idOrCallback, successCallback, failureCallback)
+
   @toJSON: ->
     @recordsValues()
 
